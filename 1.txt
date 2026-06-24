@@ -1,0 +1,36 @@
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+print("=== NumPy Demo ===")
+arr = np.array([[10, 20, 30], [40, 50, 60]])
+print("NumPy Array:\n", arr)
+print("Array Shape:", arr.shape)
+print("Array Data Type:", arr.dtype)
+print("Array Mean:", np.mean(arr))
+print("Array Transpose:\n", arr.T)
+
+print("\n=== Pandas Demo ===")
+data = {
+'Name': ['Alice', 'Bob', 'Charlie'],
+'Age': [24, 29, 35],
+'Department': ['CSE', 'ECE', 'ISE']
+}
+df = pd.DataFrame(data)
+print("DataFrame:\n", df)
+print("\nDataFrame Info:")
+print(df.info())
+print("\nDescriptive Statistics:\n", df.describe(include='all'))
+
+print("\n=== Matplotlib Demo ===")
+x = np.arange(1, 6)
+y = x ** 2
+plt.figure(figsize=(6, 4))
+plt.plot(x, y, marker='o', linestyle='-', color='blue', label='y = x²')
+plt.title("Line Plot: y = x²")
+plt.xlabel("X-axis")
+plt.ylabel("Y-axis (Squared Values)")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
