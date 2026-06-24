@@ -1,0 +1,465 @@
+
+# ------------------------------------------------------------
+# Experiment 1: Introduction to Jupyter Notebook and Python Libraries
+# ------------------------------------------------------------
+# Step 1: Importing Required Libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+# Step 2: Working with NumPy Arrays
+print("=== NumPy Demo ===")
+arr = np.array([[10, 20, 30], [40, 50, 60]])
+print("NumPy Array:\n", arr)
+print("Array Shape:", arr.shape)
+print("Array Data Type:", arr.dtype)
+print("Array Mean:", np.mean(arr))
+print("Array Transpose:\n", arr.T)
+# Step 3: Creating and Displaying a Pandas DataFrame
+print("\n=== Pandas Demo ===")
+data = {
+'Name': ['Alice', 'Bob', 'Charlie'],
+'Age': [24, 29, 35],
+'Department': ['CSE', 'ECE', 'ISE']
+}
+df = pd.DataFrame(data)
+print("DataFrame:\n", df)
+print("\nDataFrame Info:")
+print(df.info())
+print("\nDescriptive Statistics:\n", df.describe(include='all'))
+# Step 4: Plotting a Basic Line Graph using Matplotlib
+print("\n=== Matplotlib Demo ===")
+x = np.arange(1, 6)
+y = x ** 2
+plt.figure(figsize=(6, 4))
+plt.plot(x, y, marker='o', linestyle='-', color='blue', label='y = x²')
+plt.title("Line Plot: y = x²")
+plt.xlabel("X-axis")
+plt.ylabel("Y-axis (Squared Values)")
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+# Step 5: Bar Plot Example
+names = ['Alice', 'Bob', 'Charlie']
+ages = [24, 29, 35]
+plt.figure(figsize=(6, 4))
+plt.bar(names, ages, color='orange')
+plt.title("Bar Chart: Age Distribution")
+plt.xlabel("Name")
+plt.ylabel("Age")
+plt.tight_layout()
+plt.show()
+
+
+
+# Experiment 2: Data Cleaning and Preprocessing Techniques in Python
+# Step 1: Import necessary libraries
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+# Step 2: Load the dataset
+df = pd.read_csv('titanic.csv')
+print("Initial Data:")
+print(df.head())
+print("\nMissing Values:\n", df.isnull().sum())
+# Step 3: Handle Missing Values
+# Fill missing Age with mean
+df['Age'].fillna(df['Age'].mean(), inplace=True)
+# Drop rows with missing 'Embarked' values
+df.dropna(subset=['Embarked'], inplace=True)
+# Fill missing 'Cabin' with 'Unknown' (optional)
+df['Cabin'].fillna('Unknown', inplace=True)
+print("\nAfter Handling Missing Values:\n", df.isnull().sum())
+# Step 4: Remove Duplicates
+initial_shape = df.shape
+df.drop_duplicates(inplace=True)
+print(f"\nDuplicates removed: {initial_shape[0] - df.shape[0]}")
+# Step 5: Encode Categorical Variables
+# Encode 'Sex' column
+le = LabelEncoder()
+df['Sex'] = le.fit_transform(df['Sex'])
+# One-hot encode 'Embarked' column
+df = pd.get_dummies(df, columns=['Embarked'])
+# Optional: drop columns not used in modeling
+df.drop(['Name', 'Ticket', 'Cabin'], axis=1, inplace=True)
+# Step 6: Feature Scaling
+scaler = StandardScaler()
+df[['Age', 'Fare']] = scaler.fit_transform(df[['Age', 'Fare']])
+# Step 7: Final Check
+print("\nCleaned Data Preview:")
+print(df.head())
+print("\nData Info:")
+print(df.info())
+print("\nStatistical Summary:")
+print(df.describe())
+
+
+exp 3
+# Step 1: Import libraries
+import pandas as pd
+import numpy as np
+# Step 2: Load cleaned dataset
+df = pd.read_csv('cleaned_sales_data.csv')
+# Step 3: Ensure numeric columns
+df['Quantity Ordered'] = pd.to_numeric(df['Quantity Ordered'], errors='coerce')
+df['Price Each'] = pd.to_numeric(df['Price Each'], errors='coerce')
+# Step 4: Create 'Revenue' column
+df['Revenue'] = df['Quantity Ordered'] * df['Price Each']
+# Step 5: Total quantity ordered per product
+product_qty = df.groupby('Product')['Quantity Ordered'].sum().reset_index()
+print("\n--- Total Quantity Ordered per Product ---")
+print(product_qty)
+# Step 6: Average quantity ordered per city
+city_avg_qty = df.groupby('City')['Quantity Ordered'].mean().reset_index()
+print("\n--- Average Quantity Ordered per City ---")
+print(city_avg_qty)
+# Step 7: Total revenue per city
+city_revenue = df.groupby('City')['Revenue'].sum().reset_index()
+city_revenue = city_revenue.sort_values(by='Revenue', ascending=False)
+print("\n--- Total Revenue per City ---")
+print(city_revenue)
+# Step 8: Multiple aggregations on 'Quantity Ordered' by Product
+product_agg = df.groupby('Product')['Quantity Ordered'].agg(['min', 'max', 'mean']).reset_index()
+print("\n--- Aggregated Stats for Quantity Ordered per Product ---")
+print(product_agg)
+# Optional: Save summaries to CSV
+# product_qty.to_csv('product_quantity_summary.csv', index=False)
+# city_revenue.to_csv('city_revenue_summary.csv', index=False)
+
+
+
+# Experiment 4: Correlation Analysis and Pairwise Analysis of Multivariate Data
+# Step 1: Import Required Libraries
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+# Set visual style
+sns.set(style="whitegrid")
+# Step 2: Load Datasets
+# Iris Dataset
+iris = sns.load_dataset('iris')
+print("Iris Dataset Preview:")
+print(iris.head())
+# Titanic Dataset
+titanic = sns.load_dataset('titanic')
+print("\nTitanic Dataset Preview:")
+print(titanic[['age', 'fare', 'pclass', 'survived']].head())
+# Step 3: Correlation Matrix for Iris Dataset
+correlation_iris = iris.corr(numeric_only=True)
+print("\nCorrelation Matrix - Iris Dataset:")
+print(correlation_iris)
+# Heatmap for Iris Dataset
+plt.figure(figsize=(8, 6))
+sns.heatmap(correlation_iris, annot=True, cmap='coolwarm', linewidths=0.5)
+plt.title("Correlation Heatmap - Iris Dataset")
+plt.show()
+# Step 4: Pairplot for Iris Dataset
+sns.pairplot(iris, hue='species')
+plt.suptitle("Pairplot - Iris Dataset", y=1.02)
+plt.show()
+# Step 5: Correlation Matrix for Titanic Dataset (cleaned numeric columns)
+titanic_clean = titanic[['age', 'fare', 'pclass', 'survived']].dropna()
+correlation_titanic = titanic_clean.corr()
+print("\nCorrelation Matrix - Titanic Dataset:")
+print(correlation_titanic)
+# Heatmap for Titanic Dataset
+plt.figure(figsize=(8, 6))
+sns.heatmap(correlation_titanic, annot=True, cmap='YlGnBu', linewidths=0.5)
+plt.title("Correlation Heatmap - Titanic Dataset")
+plt.show()
+# Step 6: Pairplot for Titanic Dataset
+sns.pairplot(titanic_clean, hue='survived', palette="husl")
+plt.suptitle("Pairplot - Titanic Dataset", y=1.02)
+plt.show()
+
+
+Complete Python Code 5
+# Step 1: Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+# Step 2: Load dataset
+df = pd.read_csv("cleaned_sales_data.csv")
+df['Quantity Ordered'] = pd.to_numeric(df['Quantity Ordered'], errors='coerce')
+df['Price Each'] = pd.to_numeric(df['Price Each'], errors='coerce')
+df['Revenue'] = df['Quantity Ordered'] * df['Price Each']
+# Step 3: Aggregated summaries
+product_qty = df.groupby('Product')['Quantity Ordered'].sum().reset_index()
+city_revenue = df.groupby('City')['Revenue'].sum().reset_index()
+quantity_data = df['Quantity Ordered'].dropna()
+# Step 4: Bar Chart – Quantity by Product
+plt.figure(figsize=(10,6))
+plt.bar(product_qty['Product'], product_qty['Quantity Ordered'], color='skyblue')
+plt.title('Total Quantity Ordered per Product')
+plt.xlabel('Product')
+plt.ylabel('Quantity Ordered')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# Step 5: Line Chart – Revenue by City
+plt.figure(figsize=(8,5))
+plt.plot(city_revenue['City'], city_revenue['Revenue'], marker='o', linestyle='--', color='green')
+plt.title('Revenue by City')
+plt.xlabel('City')
+plt.ylabel('Revenue')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# Step 6: Histogram – Quantity Distribution
+plt.figure(figsize=(8,5))
+plt.hist(quantity_data, bins=20, color='orange', edgecolor='black')
+plt.title('Distribution of Quantity Ordered')
+plt.xlabel('Quantity Ordered')
+plt.ylabel('Frequency')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# Step 7: Pie Chart – Revenue Proportion by City
+plt.figure(figsize=(7,7))
+plt.pie(city_revenue['Revenue'], labels=city_revenue['City'], autopct='%1.1f%%', startangle=140)
+plt.title('Proportion of Revenue by City')
+plt.tight_layout()
+plt.show()
+
+
+
+Complete Python Code 6
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+# Load dataset
+df = pd.read_csv("cleaned_sales_data.csv")
+df['Quantity Ordered'] = pd.to_numeric(df['Quantity Ordered'], errors='coerce')
+df['Price Each'] = pd.to_numeric(df['Price Each'], errors='coerce')
+df['Revenue'] = df['Quantity Ordered'] * df['Price Each']
+# 1. Scatter Plot
+plt.figure(figsize=(8,6))
+sns.scatterplot(x='Quantity Ordered', y='Revenue', data=df)
+plt.title('Quantity Ordered vs Revenue')
+plt.xlabel('Quantity Ordered')
+plt.ylabel('Revenue')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# 2. Box Plot
+plt.figure(figsize=(8,6))
+sns.boxplot(x='City', y='Revenue', data=df)
+plt.title('Revenue Distribution by City')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+# 3. Heatmap
+corr = df[['Quantity Ordered', 'Price Each', 'Revenue']].corr()
+plt.figure(figsize=(6,5))
+sns.heatmap(corr, annot=True, cmap='coolwarm')
+plt.title('Correlation Matrix')
+plt.tight_layout()
+plt.show()
+# 4. Pair Plot
+sns.pairplot(df[['Quantity Ordered', 'Price Each', 'Revenue']])
+plt.suptitle('Pair Plot of Features', y=1.02)
+plt.tight_layout()
+plt.show()
+
+
+
+Complete Python Code 7
+# Import Libraries
+import plotly.express as px
+import plotly.graph_objects as go
+import pandas as pd
+# Load dataset
+df = px.data.gapminder().query("year == 2007")
+# Bar Chart
+fig_bar = px.bar(df, x='continent', y='pop', color='continent', title='Population by Continent')
+fig_bar.show()
+# Line Chart for a specific country
+df_line = px.data.gapminder().query("country == 'India'")
+fig_line = px.line(df_line, x='year', y='gdpPercap', title='India GDP per Capita Over Years')
+fig_line.show()
+# Scatter Plot
+fig_scatter = px.scatter(df,
+x="gdpPercap",
+y="lifeExp",
+size="pop",
+color="continent",
+hover_name="country",
+log_x=True,
+size_max=60,
+title="GDP vs Life Expectancy (2007)")
+fig_scatter.update_layout(
+xaxis_title="GDP Per Capita (log scale)",
+yaxis_title="Life Expectancy",
+legend_title="Continent"
+)
+fig_scatter.show()
+# Export to HTML
+fig_scatter.write_html("scatter_plot.html")
+
+
+
+ Experiment 8 – Complete Code
+# 📦 Import required libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+# 🔧 Set plot style
+sns.set(style='whitegrid')
+plt.rcParams['figure.figsize'] = (10, 6)
+# 📁 Load the dataset
+df = pd.read_csv('ecommerce_sales.csv')
+# 🧾 Display basic info
+print("First 5 rows of the dataset:")
+print(df.head())
+print("\nDataset Info:")
+print(df.info())
+# 🗓️ Convert OrderDate to datetime
+df['OrderDate'] = pd.to_datetime(df['OrderDate'])
+# 🧮 Extract date parts
+df['Year'] = df['OrderDate'].dt.year
+df['Month'] = df['OrderDate'].dt.month
+df['Month_Name'] = df['OrderDate'].dt.strftime('%b')
+# 🔍 Check for missing values
+print("\nMissing Values:")
+print(df.isnull().sum())
+# ✂️ Drop or fill missing values (if any)
+df.dropna(inplace=True)
+# 📊 Monthly sales trend
+monthly_sales = df.groupby(['Year', 'Month_Name'])['Amount'].sum().reset_index()
+monthly_sales['Month_Num'] = pd.to_datetime(monthly_sales['Month_Name'], format='%b').dt.month
+monthly_sales = monthly_sales.sort_values(by=['Year', 'Month_Num'])
+# 📈 Line plot – Monthly Sales Trend
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=monthly_sales, x='Month_Name', y='Amount', hue='Year', marker='o')
+plt.title('Monthly Sales Trend')
+plt.xlabel('Month')
+plt.ylabel('Total Sales Amount')
+plt.legend(title='Year')
+plt.tight_layout()
+plt.show()
+# 📊 Sales by Product Category
+category_sales = df.groupby('ProductCategory')['Amount'].sum().sort_values(ascending=False)
+# 📉 Bar plot – Sales by Category
+plt.figure(figsize=(10, 5))
+sns.barplot(x=category_sales.index, y=category_sales.values, palette='viridis')
+plt.title('Sales by Product Category')
+plt.xlabel('Product Category')
+plt.ylabel('Total Sales')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+# 🌍 Top 5 Countries by Revenue
+top_countries = df.groupby('Country')['Amount'].sum().sort_values(ascending=False).head(5)
+# 🥧 Pie chart – Revenue share by Country
+plt.figure(figsize=(8, 6))
+top_countries.plot(kind='pie', autopct='%1.1f%%', startangle=140)
+plt.title('Top 5 Countries by Revenue')
+plt.ylabel('')
+plt.tight_layout()
+plt.show()
+# 🧯 Heatmap – Month vs Product Category
+pivot = df.pivot_table(values='Amount', index='ProductCategory', columns='Month_Name', aggfunc='sum').fillna(0)
+# Sort columns by month
+ordered_months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+pivot = pivot[ordered_months]
+plt.figure(figsize=(12, 6))
+sns.heatmap(pivot, annot=True, fmt=".0f", cmap='YlGnBu')
+plt.title('Sales Heatmap (Product Category vs Month)')
+plt.xlabel('Month')
+plt.ylabel('Product Category')
+plt.tight_layout()
+plt.show()
+
+
+
+
+Sample Code 9
+# Import Required Libraries
+import pandas as pd
+import numpy as np
+from sklearn.datasets import load_wine
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Step 1: Load the Dataset
+wine = load_wine()
+X = pd.DataFrame(wine.data, columns=wine.feature_names)
+y = pd.Series(wine.target, name='target')
+# Step 2: Standardize the Features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+# Step 3: Apply PCA
+pca = PCA(n_components=2) # reduce to 2 principal components
+X_pca = pca.fit_transform(X_scaled)
+# Step 4: Create a DataFrame with PCA results
+pca_df = pd.DataFrame(data=X_pca, columns=['PC1', 'PC2'])
+pca_df['target'] = y
+# Step 5: Visualize the PCA result
+plt.figure(figsize=(10,6))
+sns.scatterplot(data=pca_df, x='PC1', y='PC2', hue='target', palette='Set1', s=100)
+plt.title('PCA of Wine Dataset', fontsize=16)
+plt.xlabel('Principal Component 1')
+plt.ylabel('Principal Component 2')
+plt.grid(True)
+plt.show()
+# Step 6: Scree Plot (Explained Variance)
+pca_full = PCA()
+pca_full.fit(X_scaled)
+explained_var = pca_full.explained_variance_ratio_
+plt.figure(figsize=(8,5))
+plt.plot(np.cumsum(explained_var), marker='o', linestyle='--')
+plt.title('Explained Variance by Principal Components')
+plt.xlabel('Number of Components')
+plt.ylabel('Cumulative Explained Variance')
+plt.grid(True)
+plt.show()
+# Step 7: Print Explained Variance Ratios
+for i, var in enumerate(explained_var[:5]):
+print(f"PC{i+1}: {var:.2%} of variance")
+
+
+
+Code Implementation 10
+# Import libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+# Load dataset
+df = pd.read_csv('Mall_Customers.csv')
+# Select relevant features
+X = df[['Annual Income (k$)', 'Spending Score (1-100)']]
+# Standardize the features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+# Elbow Method to determine optimal k
+wcss = []
+for i in range(1, 11):
+kmeans = KMeans(n_clusters=i, init='k-means++', random_state=42)
+kmeans.fit(X_scaled)
+wcss.append(kmeans.inertia_)
+# Plot Elbow graph
+plt.figure(figsize=(8, 5))
+plt.plot(range(1, 11), wcss, marker='o')
+plt.title('Elbow Method - Optimal k')
+plt.xlabel('Number of clusters')
+plt.ylabel('WCSS')
+plt.grid(True)
+plt.show()
+# Apply KMeans with chosen k (e.g., 5)
+k = 5
+kmeans = KMeans(n_clusters=k, init='k-means++', random_state=42)
+df['Cluster'] = kmeans.fit_predict(X_scaled)
+# Visualize Clusters
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='Annual Income (k$)', y='Spending Score (1-100)',
+hue='Cluster', palette='Set2', data=df, s=100)
+plt.title('Customer Segments based on Income and Spending')
+plt.xlabel('Annual Income (k$)')
+plt.ylabel('Spending Score')
+plt.legend(title='Cluster')
+plt.grid(True)
+plt.show()
